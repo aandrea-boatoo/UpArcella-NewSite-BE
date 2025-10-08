@@ -1,0 +1,28 @@
+{
+  "name": "uparcella-newsite-be",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "node --env-file=.env server.js",
+    "dev": "node --env-file=.env --watch server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aandrea-boatoo/UpArcella-NewSite-BE.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/aandrea-boatoo/UpArcella-NewSite-BE/issues"
+  },
+  "homepage": "https://github.com/aandrea-boatoo/UpArcella-NewSite-BE#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "mysql2": "^3.15.1"
+  }
+}

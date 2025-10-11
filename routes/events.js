@@ -12,9 +12,26 @@ router.get("/", async (req, res) => {
         e.title,
         e.description,
         e.createdAt,
-        p.ePlace AS place,
-        GROUP_CONCAT(DISTINCT t.title) AS tags,
-        GROUP_CONCAT(DISTINCT d.eDateTime) AS dates
+        e.imgUrl,
+        ANY_VALUE(p.ePlace) AS place,
+        REPLACE(
+        CONCAT(
+        '[', 
+        GROUP_CONCAT(DISTINCT CONCAT ('"', t.title, '"') SEPARATOR ','),
+        ']'
+        ),
+        ',]', ']'
+        ) AS tags,
+        GROUP_CONCAT(
+        DISTINCT
+        CASE
+        WHEN d.id IS NULL THEN NULL
+        WHEN TIME(ANY_VALUE(d.eDateTime)) = '00:00:00'
+        THEN DATE_FORMAT(ANY_VALUE(d.eDateTime), '%d/%m/%Y')
+        ELSE DATE_FORMAT(ANY_VALUE(d.eDateTime), '%d/%m/%Y %h:%i')
+        END 
+        ORDER BY d.eDateTime SEPARATOR ', '
+        ) AS dates
       FROM events e
       LEFT JOIN places p ON e.places_id = p.id
       LEFT JOIN tags_connection tc ON e.id = tc.events_id
@@ -22,7 +39,7 @@ router.get("/", async (req, res) => {
       LEFT JOIN dates_connection dc ON e.id = dc.events_id
       LEFT JOIN dates d ON dc.dates_id = d.id
       GROUP BY e.id
-      ORDER BY e.createdAt DESC
+      ORDER BY ANY_VALUE(d.eDateTime) ASC;
     `);
         res.json(results);
     } catch (err) {
@@ -43,17 +60,39 @@ router.get("/:id", async (req, res) => {
         e.title,
         e.description,
         e.createdAt,
+        e.imgUrl AS imgUrl,
         p.ePlace AS place,
-        GROUP_CONCAT(DISTINCT t.title) AS tags,
-        GROUP_CONCAT(DISTINCT d.eDateTime) AS dates
+        REPLACE(
+        CONCAT(
+        '[', 
+        GROUP_CONCAT(DISTINCT CONCAT ('"', t.title, '"') SEPARATOR ','),
+        ']'
+        ),
+        ',]', ']'
+        ) AS tags,
+        GROUP_CONCAT(
+        DISTINCT
+            CASE
+            WHEN d.id IS NULL THEN 'Data non precisata'
+            WHEN TIME(ANY_VALUE(d.eDateTime)) = '00:00:00'
+            THEN DATE_FORMAT(ANY_VALUE(d.eDateTime), '%d/%m/%Y')
+            ELSE DATE_FORMAT(ANY_VALUE(d.eDateTime), '%d/%m/%Y %h:%i')
+            END
+            ORDER BY d.eDateTime SEPARATOR ', '
+            )
+        AS dates,
+        w.title AS orgGroup,
+        w.groupDescription AS groupDes,
+        w.imgUrl AS groupImg
       FROM events e
       LEFT JOIN places p ON e.places_id = p.id
       LEFT JOIN tags_connection tc ON e.id = tc.events_id
       LEFT JOIN tags t ON tc.tags_id_tags = t.id_tags
       LEFT JOIN dates_connection dc ON e.id = dc.events_id
       LEFT JOIN dates d ON dc.dates_id = d.id
+      LEFT JOIN who w ON e.who_id = w.id
       WHERE e.id = ?
-      GROUP BY e.id
+      GROUP BY e.id;
     `, [id]);
 
         if (results.length === 0) {
@@ -61,8 +100,6 @@ router.get("/:id", async (req, res) => {
         }
 
         const event = results[0];
-        event.tags = event.tags ? event.tags.split(",") : [];
-        event.dates = event.dates ? event.dates.split(",") : [];
         res.json(event);
 
     } catch (err) {
@@ -75,12 +112,12 @@ router.get("/:id", async (req, res) => {
 
 // 🔹 Crea un nuovo evento
 router.post("/", async (req, res) => {
-    const { title, description, places_id } = req.body;
+    const { title, description, places_id, imgUrl } = req.body;
     try {
         const [result] = await db.query(
-            `INSERT INTO events (title, description, places_id, createdAt)
-       VALUES (?, ?, ?, NOW())`,
-            [title, description, places_id]
+            `INSERT INTO events (title, description, places_id, imgUrl, createdAt)
+       VALUES (?, ?, ?, ?, NOW())`,
+            [title, description, places_id, imgUrl]
         );
         res.status(201).json({ id: result.insertId, message: "Evento creato!" });
     } catch (err) {

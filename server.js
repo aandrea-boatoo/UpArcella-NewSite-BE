@@ -6,6 +6,7 @@ import eventsRouter from "./routes/events.js";
 import tagsRouter from "./routes/tags.js";
 import placesRouter from "./routes/places.js";
 import datesRouter from "./routes/dates.js";
+import spuntiRouter from "./routes/spunti.js"
 
 dotenv.config();
 
@@ -20,7 +21,7 @@ app.use("/events", eventsRouter);
 app.use("/tags", tagsRouter);
 app.use("/places", placesRouter);
 app.use("/dates", datesRouter);
-
+app.use("/spunti", spuntiRouter)
 // Connessione e avvio
 const PORT = process.env.PORT || 3000;
 

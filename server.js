@@ -6,7 +6,9 @@ import eventsRouter from "./routes/events.js";
 import tagsRouter from "./routes/tags.js";
 import placesRouter from "./routes/places.js";
 import datesRouter from "./routes/dates.js";
-import spuntiRouter from "./routes/spunti.js"
+import spuntiRouter from "./routes/spunti.js";
+import apiKeysRouter from "./routes/apiKeys.js";
+import activityGroupRouter from "./routes/activityGroup.js"
 
 dotenv.config();
 
@@ -21,9 +23,13 @@ app.use("/events", eventsRouter);
 app.use("/tags", tagsRouter);
 app.use("/places", placesRouter);
 app.use("/dates", datesRouter);
-app.use("/spunti", spuntiRouter)
+app.use("/spunti", spuntiRouter);
+app.use("/credereApi", apiKeysRouter);
+app.use("/activityGroup", activityGroupRouter);
+
 // Connessione e avvio
 const PORT = process.env.PORT || 3000;
+
 
 try {
     await db.connect();

@@ -3,7 +3,7 @@ import db from "../db/connection.js";
 
 const router = express.Router();
 
-// 🔹 Ottieni tutti gli eventi con date, luogo e tag
+// Ottieni tutti gli eventi con date luogo e tag
 router.get("/", async (req, res) => {
     try {
         const [results] = await db.query(`
@@ -38,6 +38,97 @@ router.get("/", async (req, res) => {
       LEFT JOIN tags t ON tc.tags_id_tags = t.id_tags
       LEFT JOIN dates_connection dc ON e.id = dc.events_id
       LEFT JOIN dates d ON dc.dates_id = d.id
+      GROUP BY e.id
+      ORDER BY ANY_VALUE(d.eDateTime) ASC;
+    `);
+        res.json(results);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// 🔹 Ottieni tutti i MAIN eventi con date, luogo e tag
+router.get("/main", async (req, res) => {
+    try {
+        const [results] = await db.query(`
+      SELECT 
+        e.id,
+        e.title,
+        e.description,
+        e.createdAt,
+        e.imgUrl,
+        ANY_VALUE(p.ePlace) AS place,
+        REPLACE(
+        CONCAT(
+        '[', 
+        GROUP_CONCAT(DISTINCT CONCAT ('"', t.title, '"') SEPARATOR ','),
+        ']'
+        ),
+        ',]', ']'
+        ) AS tags,
+        GROUP_CONCAT(
+        DISTINCT
+        CASE
+        WHEN d.id IS NULL THEN NULL
+        WHEN TIME(ANY_VALUE(d.eDateTime)) = '00:00:00'
+        THEN DATE_FORMAT(ANY_VALUE(d.eDateTime), '%d/%m/%Y')
+        ELSE DATE_FORMAT(ANY_VALUE(d.eDateTime), '%d/%m/%Y %h:%i')
+        END 
+        ORDER BY d.eDateTime SEPARATOR ', '
+        ) AS dates
+      FROM events e
+      LEFT JOIN places p ON e.places_id = p.id
+      LEFT JOIN tags_connection tc ON e.id = tc.events_id
+      LEFT JOIN tags t ON tc.tags_id_tags = t.id_tags
+      LEFT JOIN dates_connection dc ON e.id = dc.events_id
+      LEFT JOIN dates d ON dc.dates_id = d.id
+      WHERE main_list = 1
+      GROUP BY e.id
+      ORDER BY ANY_VALUE(d.eDateTime) ASC;
+    `);
+        res.json(results);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+
+// 🔹 Ottieni tutti i second eventi con date, luogo e tag
+router.get("/ordinary", async (req, res) => {
+    try {
+        const [results] = await db.query(`
+      SELECT 
+        e.id,
+        e.title,
+        e.description,
+        e.createdAt,
+        e.imgUrl,
+        ANY_VALUE(p.ePlace) AS place,
+        REPLACE(
+        CONCAT(
+        '[', 
+        GROUP_CONCAT(DISTINCT CONCAT ('"', t.title, '"') SEPARATOR ','),
+        ']'
+        ),
+        ',]', ']'
+        ) AS tags,
+        GROUP_CONCAT(
+        DISTINCT
+        CASE
+        WHEN d.id IS NULL THEN NULL
+        WHEN TIME(ANY_VALUE(d.eDateTime)) = '00:00:00'
+        THEN DATE_FORMAT(ANY_VALUE(d.eDateTime), '%d/%m/%Y')
+        ELSE DATE_FORMAT(ANY_VALUE(d.eDateTime), '%d/%m/%Y %h:%i')
+        END 
+        ORDER BY d.eDateTime SEPARATOR ', '
+        ) AS dates
+      FROM events e
+      LEFT JOIN places p ON e.places_id = p.id
+      LEFT JOIN tags_connection tc ON e.id = tc.events_id
+      LEFT JOIN tags t ON tc.tags_id_tags = t.id_tags
+      LEFT JOIN dates_connection dc ON e.id = dc.events_id
+      LEFT JOIN dates d ON dc.dates_id = d.id
+      WHERE main_list = 0
       GROUP BY e.id
       ORDER BY ANY_VALUE(d.eDateTime) ASC;
     `);

@@ -8,14 +8,14 @@ import placesRouter from "./routes/places.js";
 import datesRouter from "./routes/dates.js";
 import spuntiRouter from "./routes/spunti.js";
 import apiKeysRouter from "./routes/apiKeys.js";
-import activityGroupRouter from "./routes/activityGroup.js"
+import activityGroupRouter from "./routes/activityGroup.js";
+import usersRouter from "./routes/users.js";
 
 dotenv.config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-
 
 // rotte
 
@@ -26,6 +26,7 @@ app.use("/dates", datesRouter);
 app.use("/spunti", spuntiRouter);
 app.use("/credereApi", apiKeysRouter);
 app.use("/activityGroup", activityGroupRouter);
+app.use("/login", usersRouter)
 
 // Connessione e avvio
 const PORT = process.env.PORT || 3000;

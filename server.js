@@ -9,6 +9,7 @@ import datesRouter from "./routes/dates.js";
 import spuntiRouter from "./routes/spunti.js";
 import apiKeysRouter from "./routes/apiKeys.js";
 import activityGroupRouter from "./routes/activityGroup.js";
+import daylySharesRouter from "./routes/daylyShares.js";
 import usersRouter from "./routes/users.js";
 
 dotenv.config();
@@ -26,7 +27,8 @@ app.use("/dates", datesRouter);
 app.use("/spunti", spuntiRouter);
 app.use("/credereApi", apiKeysRouter);
 app.use("/activityGroup", activityGroupRouter);
-app.use("/login", usersRouter)
+app.use("/daylyShare", daylySharesRouter);
+app.use("/login", usersRouter);
 
 // Connessione e avvio
 const PORT = process.env.PORT || 3000;

@@ -6,7 +6,7 @@ const router = express.Router();
 // 🔹 Ottieni tutti i tag
 router.get("/", async (req, res) => {
     try {
-        const [results] = await db.query("SELECT * FROM tags ORDER BY title ASC");
+        const [results] = await db.query("SELECT * FROM tags ORDER BY id_tags ASC");
         res.json(results);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -21,7 +21,7 @@ router.post("/", async (req, res) => {
             "INSERT INTO tags (title) VALUES (?)",
             [title]
         );
-        res.status(201).json({ id: result.insertId, message: "Tag creato!" });
+        res.status(201).json({ id: result.insertId, title: title, message: "Tag creato!" });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

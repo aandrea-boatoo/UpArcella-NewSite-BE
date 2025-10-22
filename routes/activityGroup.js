@@ -43,5 +43,18 @@ router.post("/", async (req, res) => {
     }
 });
 
+// elimina gruppo
+router.delete("/:id", async (req, res) => {
+    const { id } = req.params;
+    try {
+        const [result] = await db.query("DELETE FROM activitygroup WHERE id = ?", [id]);
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: "Gruppo non trovato" })
+        }
+        res.json({ message: "Gruppo eliminato con successo" });
+    } catch (err) {
+        res.status(500).json({ error: err.message })
+    }
+});
 
 export default router;

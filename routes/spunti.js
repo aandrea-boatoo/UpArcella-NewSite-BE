@@ -54,4 +54,18 @@ router.post("/", async (req, res) => {
     }
 });
 
+// elimina spunto
+router.delete("/:id", async (req, res) => {
+    const { id } = req.params;
+    try {
+        const [result] = await db.query("DELETE FROM spuntis WHERE id = ?", [id]);
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: "Spunto non trovato" })
+        }
+        res.json({ message: "Spunto eliminato con successo" });
+    } catch (err) {
+        res.status(500).json({ error: err.message })
+    }
+});
+
 export default router

@@ -45,9 +45,9 @@ router.get("/:id", async (req, res) => {
 
 // crea nuovo spunto
 router.post("/", async (req, res) => {
-    const { spunto } = req.body;
+    const { title, subtitle, description } = req.body;
     try {
-        const [result] = await db.query("INSERT INTO spuntis (title, subtitle, description) VALUES (?, ?, ?)", [spunto]);
+        const [result] = await db.query("INSERT INTO spuntis (title, subtitle, description) VALUES (?, ?, ?)", [title, subtitle, description]);
         res.status(201).json({ id: result.insertId, message: "spunto pubblicato" });
     } catch (err) {
         res.status(500).json({ error: err.message });

@@ -45,9 +45,9 @@ router.get("/today", async (req, res) => {
 
 // crea nuovo commento
 router.post("/", async (req, res) => {
-    const { daylyShare } = req.body;
+    const { title, comment, postDay } = req.body;
     try {
-        const [result] = await db.query("INSERT INTO daylyShare (title, comment, postDay) VALUES (?, ?, ?)", [daylyShare]);
+        const [result] = await db.query("INSERT INTO daylyShare (title, comment, postDay) VALUES (?, ?, ?)", [title, comment, postDay]);
         res.status(201).json({ id: result.insertId, message: "commento pubblicato" });
     } catch (err) {
         res.status(500).json({ error: err.message });

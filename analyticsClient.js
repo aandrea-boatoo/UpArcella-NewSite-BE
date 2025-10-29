@@ -8,7 +8,7 @@ const analyticsDataClient = new BetaAnalyticsDataClient({
 });
 
 // 🔹 Pagine da escludere da views e durata sessione
-const EXCLUDED_PATHS = ["/owner", "/auth"];
+const EXCLUDED_PATHS = ["/owner", "/auth", "/owner/addMain", "/owner/addActivity", "/owner/addFormat", "/owner/handle"];
 
 /**
  * Ottiene statistiche generali e giornaliere dal tuo account GA4.

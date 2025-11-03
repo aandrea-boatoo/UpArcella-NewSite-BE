@@ -12,6 +12,8 @@ import daylySharesRouter from "./routes/daylyShares.js";
 import usersRouter from "./routes/users.js";
 import analyticsRouter from './routes/analytics.js';
 import uploadRouter from './routes/upload.js';
+import messeRouter from './routes/messe.js';
+import fotoalbumRouter from './routes/fotoalbum.js'
 
 dotenv.config();
 
@@ -30,6 +32,8 @@ app.use("/daylyShare", daylySharesRouter);
 app.use("/login", usersRouter);
 app.use("/api", analyticsRouter);
 app.use("/upload", uploadRouter);
+app.use("/messe", messeRouter);
+app.use("/fotoalbum", fotoalbumRouter);
 
 // Connessione e avvio
 const PORT = process.env.PORT || 3000;
@@ -42,4 +46,3 @@ try {
 } catch {
     console.error("Errore connessione db:", err);
 }
-
